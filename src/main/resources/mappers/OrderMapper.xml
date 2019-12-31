@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.mapper.OrderMapper">
+    <insert id="addOrder" parameterType="orders">
+        insert into orders (uid,gid,count,status,createtime,updatetime)
+        values
+        (#{uid},#{gid},#{count},#{status},#{createtime},#{updatetime})
+    </insert>
+
+    <select id="queryList" resultType="orderVo">
+        select orders.*,user.username,goods.name,goods.price,goods.stock,goods.category,goods.info,goods.pic,(price*count) as totalprice
+        from orders left join goods on orders.gid=goods.id left join user on orders.uid=user.id
+        <where>
+            <if test="uid!=null and uid!=-1">
+                and uid = #{uid}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateOrderStatus" parameterType="int">
+        update orders set status = #{status} where id = #{id}
+    </update>
+
+</mapper>

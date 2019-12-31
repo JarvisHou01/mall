@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>电影列表</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/table/bootstrap-table.min.css}" rel="stylesheet">
+</head>
+<body>
+<!-- 展示区域 -->
+<table id="orderTable" class="table table-bordered table-hover">
+</table>
+
+
+<!-- 更新模态框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <form id="updateForm" th:action="@{/order/update}" method="post" enctype="multipart/form-data" class="form-horizontal" role="form">
+                    <input type="hidden" id="id" name="id">
+
+                    <div class="form-group">
+                        <label for="status" class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-8">
+                            <label>
+                                <select name="status" id="status" class="form-control">
+                                    <option value="0">付款成功</option>
+                                    <option value="1">发货成功</option>
+                                    <option value="2">已被签收</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">更新</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table-zh-CN.min.js}"></script>
+<script th:inline="javascript">
+    const path = [[${#request.getContextPath()}]];
+    let orderTable;
+    $(function() {
+        let et = new Et1906();
+
+        // 页面加载完之后，查询第一页数据
+        et.queryList();
+        // 点击查询按钮后进行查询
+        $('#queryBtn').click(function(){
+            orderTable.bootstrapTable('refresh');
+        });
+    });
+
+    function Et1906() { }
+
+    // 分页查询
+    Et1906.prototype.queryList = function() {
+        orderTable = $('#orderTable').bootstrapTable({
+            url: path + '/order/list',
+            sidePagination: 'server',
+            pagination: true,
+            pageNumber: 1,
+            pageSize: 3,
+            pageList: [5, 10, 15],
+            queryParamsType: "undefined",
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            queryParams: function(params) {
+
+                let newParam = {
+                    uid:-1,
+                    pageNum: params.pageNumber,
+                    pageSize: params.pageSize,
+                }
+                return newParam;
+            },
+            columns: [
+                { field: "pic", title: "图片",
+                    formatter: function(value, row, index) {
+                        return "<img width='50px' height='50px' src='" + value + "'></img>";
+                    }
+                },
+                { field: "username", title: "用户名" },
+                { field: "name", title: "商品名称" },
+                { field: "category", title: "类别" },
+                { field: "price", title: "单价" },
+                { field: "count", title: "数量" },
+                { field: "totalprice", title: "总金额" },
+                { field: "createtime", title: "下单时间" },
+                { field: "status", title: "订单状态",
+                    formatter: function(value, row, index) {
+                        let res ="";
+                        if (value==0){
+                            res="付款成功";
+                        }else if (value==1){
+                            res="发货成功";
+                        }else if (value==2){
+                            res="已被签收";
+                        }
+                        return res;
+                    }
+                },
+                { title: "操作",
+                    formatter: function (value, row, index) {
+                        var update = "<button type='button' class='btn btn-primary' id='update' >修改订单状态</button>";
+                        return update;
+                    },
+                    events: ordersEvents
+                }]
+        });
+    }
+
+    window.ordersEvents = {
+        'click #update': function(event, value, row, index) {
+
+            $("#id").val(row.id);
+            $("#status").val(row.status);
+            $('#myModal').modal('show');
+        }
+    }
+</script>
+</body>
+</html>

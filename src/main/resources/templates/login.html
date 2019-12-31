@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <title>登录</title>
+</head>
+<body>
+<!-- Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">登陆</h4>
+            </div>
+            <div class="modal-body">
+
+                <form  role="form" th:action="@{/user/login}" method="POST" >
+                    <div class="form-group">
+                        <label class="sr-only" for="username">用户名</label>
+                        <input type="text" name="username" class="form-control"
+                               id="username"
+                               placeholder="用户名" />
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="password">密码</label>
+                        <input type="password" id="password" name="password"
+                               class="form-control" placeholder="密码" />
+                    </div>
+                    <div class="form-group" >
+                        <input with="300px" type="text" id="verifyCode" name="verifyCode"
+                               class="form-control" placeholder="验证码" >
+                        <img onclick="changeCode()" id="pic"
+                             th:src="@{/verifyCode}"  />
+                    </div>
+                    <!-- 显示错误信息 -->
+                    <span style="color:red" th:text="${error}"></span>
+
+                    <input type="submit" value="登陆" class="btn btn-primary" />
+                    <a class="btn btn-default" th:href="@{/user/to_register}">注册</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:inline="javascript" type="text/javascript">
+    var contextPath = [[${#request.getContextPath()}]];
+    $('#loginModal').modal('show');
+    function changeCode(){
+        $('#pic').attr('src', contextPath +"/verifyCode?"+new Date().getTime());
+    }
+    if(top != window) {
+        top.location.href = window.location.href;
+    }
+</script>
+</body>
+</html>

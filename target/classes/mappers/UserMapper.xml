@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.mapper.UserMapper">
+    <select id="queryList" resultType="User">
+        select * from user where status>=0
+    </select>
+
+    <select id="queryUser" resultType="User">
+        select * from user where username = #{username} and password = #{password} and status>=0
+    </select>
+
+    <select id="queryUserByName" resultType="User">
+        select * from user where username = #{username}
+    </select>
+
+    <insert id="addUser" parameterType="user">
+        insert into user (username,password,phone,email,status) values (#{username},#{password},#{phone},#{email},#{status})
+    </insert>
+
+    <update id="deleteUserById">
+        update user set status = -1 where id = #{id}
+    </update>
+
+    <update id="updateUser" parameterType="user">
+        update user set phone = #{phone},email = #{email} where id = #{id}
+    </update>
+</mapper>

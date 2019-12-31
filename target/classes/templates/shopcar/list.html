@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>购物车</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/table/bootstrap-table.min.css}" rel="stylesheet">
+</head>
+<body>
+<!-- 展示区域 -->
+<input id="uid" type="hidden" th:value="${session.user.id}">
+<table id="carTable" class="table table-bordered table-hover">
+</table>
+
+
+
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table-zh-CN.min.js}"></script>
+<script th:inline="javascript">
+    const path = [[${#request.getContextPath()}]];
+    let carTable;
+    $(function() {
+        let et = new Et1906();
+
+        // 页面加载完之后，查询第一页数据
+        et.queryList();
+        // 点击查询按钮后进行查询
+        $('#queryBtn').click(function(){
+            carTable.bootstrapTable('refresh');
+        });
+    });
+
+    function Et1906() { }
+
+    // 分页查询
+    Et1906.prototype.queryList = function() {
+        orderTable = $('#carTable').bootstrapTable({
+            url: path + '/shopcar/queryList',
+            sidePagination: 'server',
+            pagination: true,
+            pageNumber: 1,
+            pageSize: 3,
+            pageList: [5, 10, 15],
+            queryParamsType: "undefined",
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            queryParams: function(params) {
+
+                let uid = $("#uid").val();
+
+                let newParam = {
+                    pageNum: params.pageNumber,
+                    pageSize: params.pageSize,
+                    uid:uid
+                }
+                return newParam;
+            },
+            columns: [
+                { field: "pic", title: "图片",
+                    formatter: function(value, row, index) {
+                        return "<img width='50px' height='50px' src='" + value + "'></img>";
+                    }
+                },
+                { field: "name", title: "商品名称" },
+                { field: "category", title: "类别" },
+                { field: "price", title: "单价" },
+                { field: "count", title: "数量" },
+                { field: "totalprice", title: "总金额" },
+                { title: "操作",
+                    formatter: function (value, row, index) {
+                        var buy = "<button type='button' class='btn btn-primary' id='buy' >购买</button>";
+
+                        var del = "<button type='button' class='btn btn-primary' id='del' >移除</button>";
+                        return buy+" | "+del;
+                    },
+                    events: ordersEvents
+                }]
+        });
+    }
+
+    window.ordersEvents = {
+        'click #buy': function(event, value, row, index) {
+
+            let gid = row.gid;
+            let num = row.count;
+            let uid = row.uid;
+            let carId = row.id;
+            $.ajax({
+                url:path+"/shopcar/buy",
+                type:"post",
+                data:{
+                    gid:gid,
+                    num:num,
+                    uid:uid,
+                    carId:carId,
+                },
+                dataType:'json',
+                success:function (msg) {
+                    if (msg.code==200&&msg.msg=='yes'){
+                        alert("购买成功");
+                    }else if (msg==500&&msg.msg=='notEnough'){
+                        alert("库存不足,该条目已被删除")
+                    }else {
+                        alert("购买失败");
+                    }
+                    window.location.href=path+"/frontgoods/to_list";
+                }
+            });
+        },
+        'click #del': function(event, value, row, index) {
+            let carId = row.id;
+            $.ajax({
+                url:path+"/shopcar/del",
+                type:"post",
+                data:{
+                    carId:carId
+                },
+                dataType:'json',
+                success:function (msg) {
+                    if (msg.code==200&&msg.msg=='yes'){
+                        alert("删除成功");
+                    }else {
+                        alert("删除失败");
+                    }
+                    window.location.href=path+"/frontgoods/to_list";
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

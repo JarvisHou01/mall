@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.mapper.ShopCarMapper">
+    <insert id="add" parameterType="int">
+        insert into shopcar (uid,gid,count)
+        values
+        (#{uid},#{gid},#{count})
+    </insert>
+
+    <select id="queryList" resultType="shopcarvo" parameterType="int">
+        select goods.name,goods.price,goods.stock,goods.category,goods.info,goods.pic,goods.status,shopcar.*,(count*price) as totalprice
+        from shopcar left join goods on shopcar.gid = goods.id
+        where uid = #{uid}
+    </select>
+
+    <delete id="delById" parameterType="int">
+        delete from shopcar where id = #{id}
+    </delete>
+
+</mapper>

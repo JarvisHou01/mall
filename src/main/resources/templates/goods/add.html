@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>添加商品</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<form id="addForm" th:action="@{/goods/add}" method="post" enctype="multipart/form-data" class="form-horizontal" role="form">
+    <div class="form-group">
+        <label for="name" class="col-sm-2 control-label">商品名称</label>
+        <div class="col-sm-6 input-group">
+            <input type="text" class="form-control" id="name" name="name">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="price" class="col-sm-2 control-label">价格</label>
+        <div class="col-sm-6 input-group">
+            <input type="number" class="form-control" id="price" name="price">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="stock" class="col-sm-2 control-label">库存</label>
+        <div class="col-sm-6 input-group">
+            <input type="text" class="form-control" id="stock" name="stock">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="category" class="col-sm-2 control-label">类别</label>
+        <div class="col-sm-6 input-group">
+            <label>
+                <select id="category" class="form-control" name="category">
+                    <option value="鞋服">鞋服</option>
+                    <option value="食品">食品</option>
+                    <option value="数码">数码</option>
+                    <option value="日用">日用</option>
+                    <option value="书籍">书籍</option>
+                </select>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="picture" class="col-sm-2 control-label">商品图片</label>
+        <div class="col-sm-6 input-group">
+            <input type="file" class="form-control" id="picture" name="picture">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="info" class="col-sm-2 control-label">描述</label>
+        <div class="col-sm-6 input-group">
+            <input type="text" class="form-control" id="info" name="info">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">添加</button>
+        </div>
+    </div>
+</form>
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/js/jquery/jquery.validate.min.js}"></script>
+<script th:src="@{/js/jquery/messages_zh.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:inline="javascript">
+    let path = [[${#request.getContextPath()}]];
+    $(function(){
+
+        ET.checkAddForm();
+    });
+
+    let ET = {
+        checkAddForm: function() {
+            $('#addForm').validate({
+                //开启debug模式，只进行校验，不提交表单
+                debug: false,
+                // 校验成功之后，可以在这里自定义表单提交方式，如使用ajax提交
+                // submitHandler: function(form) {
+                //    alert('验证成功');
+                // },
+
+                // 修改错误信息标签(默认是label)。使用LayUI时需要修改为div
+                errorElement: 'div',
+                // 修改错误显示位置；error:表示那个label标签; element:input输入框
+                errorPlacement: function(error, element) {
+                    error.addClass('input-group-addon');
+                    error.appendTo(element.parent());
+                },
+                // 校验成功之后, 执行这个方法
+                success: function (label) {
+                    label.addClass('success input-group-addon').text('OK');
+                },
+                rules: {
+                    name: { // 这里的rental是form表单中的文本框等控件的name属性值
+                        required: true,
+                    },
+                    pic: {
+                        required:true,
+                        isPic:true
+                    }
+                },
+                messages: {
+                    name:{
+                        required:'填写名字'
+                    },
+                    pic: {
+                        required:'填写图片',
+                        isPic:'请选择正确的图片'
+                    }
+                }
+            });
+
+            // 自定义一个校验规则：校验图片
+            // $.validator.addMethod(name, method, message);
+            $.validator.addMethod('isPic', function(value, element) {
+                let filepath = $("#pic").val();
+                //获得上传文件名
+                let fileArr = filepath.split("\\");
+                let fileTArr = fileArr[fileArr.length - 1].toLowerCase().split(".");
+                let filetype = fileTArr[fileTArr.length - 1];
+                //切割出后缀文件名
+                if (filetype == "jpg" || filetype === "bmp" || filetype == "jpg" || filetype == "tiff" || filetype == "gif"||filetype =="svg" ||filetype =="psd")
+                {
+                    return true;
+                } else {
+                    return false;
+                }
+            }, "长传文件必须为图片");
+        }
+    }
+</script>
+
+
+</body>
+</html>

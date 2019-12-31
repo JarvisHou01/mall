@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <title>注册</title>
+</head>
+<body>
+
+<!-- Modal -->
+<div class="modal fade" id="regModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">注册</h4>
+            </div>
+            <div class="modal-body">
+
+                <form  role="form" th:action="@{/user/register}" method="POST" >
+                    <div class="form-group">
+                        <label class="sr-only" for="username">用户名</label>
+                        <input type="text" name="username" class="form-control"
+                               id="username"
+                               placeholder="用户名" />
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="phone">电话</label>
+                        <input type="text" name="phone" class="form-control"
+                               id="phone"
+                               placeholder="电话" />
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="email">邮箱</label>
+                        <input type="text" name="email" class="form-control"
+                               id="email"
+                               placeholder="邮箱" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="sr-only" for="password">密码</label>
+                        <input type="password" id="password" name="password"
+                               class="form-control" placeholder="密码" />
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="password2">密码</label>
+                        <input type="password" id="password2" name="password2"
+                               class="form-control" placeholder="密码" />
+                    </div>
+
+                    <span style="color:red" th:text="${error}"></span>
+
+                    <input type="submit" value="注册" class="btn btn-primary" />
+                    <a th:href="@{/user/to_login}">已经有账号?去登录</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:inline="javascript" type="text/javascript">
+    var contextPath = [[${#request.getContextPath()}]];
+    $('#regModal').modal('show');
+    if(top != window) {
+        top.location.href = window.location.href;
+    }
+</script>
+</body>
+</html>

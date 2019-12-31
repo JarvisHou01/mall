@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>商品页</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/table/bootstrap-table.min.css}" rel="stylesheet">
+</head>
+<body>
+<!-- 查询区域 -->
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-info">
+        <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    商品查询
+                </a>
+            </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="category" class="col-sm-1 control-label">类别</label>
+                        <div class="col-sm-3 input-inline">
+                            <label>
+                                <select id="category" class="form-control" name="category">
+                                    <option value="">==选择商品==</option>
+                                    <option value="鞋服">鞋服</option>
+                                    <option value="食品">食品</option>
+                                    <option value="数码">数码</option>
+                                    <option value="日用">日用</option>
+                                    <option value="书籍">书籍</option>
+                                </select>
+                            </label>
+                        </div>
+                        <label for="name" class="col-sm-1 control-label">关键词</label>
+                        <div class="col-sm-3 input-inline">
+                            <input id="name" name="name" type="text" class="form-control">
+                        </div>
+                        <div class="col-sm-3 input-inline">
+                            <button id="queryBtn" type="button" class="btn btn-primary">查询</button>
+                            <button type="reset" class="btn btn-info">重置</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="showHot" class="row">
+</div>
+
+<button id="first" class="btn btn-default">首页</button>
+<button id="pre" class="btn btn-default">上一页</button>
+<button id="next" class="btn btn-default">下一页</button>
+<button id="last" class="btn btn-default">末页</button>
+<span id="msg"></span>
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table-zh-CN.min.js}"></script>
+<script th:inline="javascript">
+    const path = [[${#request.getContextPath()}]];
+    let pageNum=1;
+    let pageSize=4;
+    let pageCount;
+    let pre;
+    let next;
+    let first;
+    let last;
+    $(function () {
+       getHot();
+    });
+
+    $("#queryBtn").on('click',function () {
+        pageNum = 1;
+        pageSize = 4;
+        getHot();
+    })
+
+    $("#first").on('click',function () {
+        pageNum=1;
+        getHot();
+    });
+    $("#pre").on('click',function () {
+        pageNum=pre;
+        getHot();
+    });
+    $("#next").on('click',function () {
+        pageNum=next;
+        getHot();
+    });
+    $("#last").on('click',function () {
+        console.log("---------");
+        pageNum=pageCount;
+        getHot();
+    });
+
+    function getHot() {
+        let name = $("#name").val();
+        let category = $("#category").val();
+        $.ajax({
+            url:path+"/frontgoods/queryList?pageNum="+pageNum+"&pageSize="+pageSize+"&status=1&name="+name+"&category="+category,
+            type:"post",
+            dataType:"json",
+            success:function (msg) {
+                pageCount = msg.pageCount;
+                pageNum = msg.pageNum;
+                pageSize = msg.pageSize;
+                pre = msg.pre;
+                next = msg.next;
+                first = msg.first;
+                last = msg.last;
+
+                if (first == true){
+                    $("#pre").prop("disabled", true);
+                    $("#first").prop("disabled", true);
+                }else {
+                    $("#pre").prop("disabled", false);
+                    $("#first").prop("disabled", false);
+                }
+                if (last == true){
+                    $("#last").prop("disabled", true);
+                    $("#next").prop("disabled", true);
+                }else {
+                    $("#last").prop("disabled", false);
+                    $("#next").prop("disabled", false);
+                }
+
+                let res = "";
+                for (let m of msg.rows){
+                    let toInfo = path+"/frontgoods/toInfo?id="+m.id;
+                    res+="<div class=\"col-sm-6 col-md-3\">\n" +
+                        "        <div class=\"thumbnail\">\n" +
+                        "            <a href='"+toInfo+"'><img src='"+m.pic+"' alt=\"...\"></a>\n" +
+                        "            <div class=\"caption\">\n" +
+                        "                <p><a href='"+toInfo+"'>"+m.name+"</a></p>\n" +
+                        "            </div>\n" +
+                        "        </div>\n" +
+                        "    </div>";
+                }
+                $("#showHot").html(res);
+
+                $("#msg").text("这是第"+pageNum+"页,共"+pageCount+"页");
+            }
+        })
+    }
+
+
+
+    function toPage(loc){
+        console.log(loc);
+        window.location.href=loc;
+    }
+
+</script>
+</body>
+</html>

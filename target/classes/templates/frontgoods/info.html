@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>商品详情页</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/bootstrap/table/bootstrap-table.min.css}" rel="stylesheet">
+</head>
+<body>
+
+<ul class="list-group">
+    <li class="list-group-item">商品名称:<span th:text="${goods.getName()}"></span></li>
+    <li class="list-group-item">价格:<span th:text=" ${goods.getPrice()}"></span></li>
+    <li class="list-group-item">库存:<span id="" th:text="${goods.getStock()}"></span></li>
+    <input type="hidden" id="stock" th:value="${goods.getStock()}">
+    <li class="list-group-item">类型:<span th:text="${goods.getCategory()}"></span></li>
+    <li class="list-group-item">详细信息:<span th:text="${goods.getInfo()}"></span></li>
+</ul>
+    <br>
+    <img width="400px" height="400px" th:src="${goods.getPic()}" alt="">
+
+    <input id="gid" type="hidden" th:value="${goods.getId()}">
+    <input id="uid" type="hidden" th:value="${session.user.id}">
+    <br>
+    <br>
+
+    <div class="form-group">
+        <label for="number" class="col-sm-2 control-label">购买的数量:</label>
+        <div class="col-sm-6 input-group">
+            <input type="number" class="form-control" id="number" name="number">
+        </div>
+    </div>
+    <button id="buy" class="btn btn-success">购买</button>
+    <button id="addtocar" class="btn btn-success">加入购物车</button>
+    <ul class="list-group" id="showMessage">
+    </ul>
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table.min.js}"></script>
+<script th:src="@{/bootstrap/table/bootstrap-table-zh-CN.min.js}"></script>
+<script th:inline="javascript">
+    const path = [[${#request.getContextPath()}]];
+    $(function () {
+    });
+
+    function checkNumber(){
+        let num = $("#number").val();
+        if (num<=0){
+            alert("输入的数量请大于零");
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    function checkStock(){
+        let stock = $("#stock").val();
+        let num = $("#number").val();
+        if (stock-num<0){
+            alert("库存不足");
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    $("#buy").on('click',function () {
+        if (checkNumber()&&checkStock()){
+            //发送ajax请求生成订单
+            let gid = $("#gid").val();
+            let num = $("#number").val();
+            let uid = $("#uid").val();
+            $.ajax({
+                url:path+"/frontgoods/buy",
+                type:"post",
+                data:{
+                    gid:gid,
+                    num:num,
+                    uid:uid
+                },
+                dataType:'json',
+                success:function (msg) {
+                    if (msg.code==200&&msg.msg=='yes'){
+                        alert("购买成功");
+                    }else {
+                        alert("购买失败");
+                    }
+                    window.location.href=path+"/frontgoods/to_list";
+                }
+            });
+        }
+    });
+
+    $("#addtocar").on('click',function () {
+        if (checkNumber()&&checkStock()){
+            //发送ajax请求生成订单
+            let gid = $("#gid").val();
+            let count = $("#number").val();
+            let uid = $("#uid").val();
+            $.ajax({
+                url:path+"/shopcar/add",
+                type:"post",
+                data:{
+                    gid:gid,
+                    count:count,
+                    uid:uid
+                },
+                dataType:'json',
+                success:function (msg) {
+                    if (msg.code==200&&msg.msg=='yes'){
+                        alert("加入购物车成功");
+                    }else {
+                        alert("加入购物车失败");
+                    }
+                    window.location.href=path+"/frontgoods/to_list";
+                }
+            });
+        }
+    });
+
+
+</script>
+</body>
+</html>

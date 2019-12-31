@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>用户列表</title>
+        <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+        <link th:href="@{/bootstrap/table/bootstrap-table.min.css}" rel="stylesheet">
+    </head>
+    <body>
+        <table id="userTable" class="table table-bordered table-hover">
+        </table>
+
+        <!-- 更新用户-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">更新用户信息</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{/user/update}"
+                              method="post"
+                              class="form-horizontal"
+                              role="form">
+                            <!-- 更新需要的id -->
+                            <input type="hidden" name="id" id="id">
+                            <div class="form-group">
+                                <label for="phone" class="col-sm-2 control-label">电话号码</label>
+                                <div class="col-sm-6 input-group">
+                                    <input type="text" class="form-control" id="phone" name="phone">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-sm-2 control-label">邮箱</label>
+                                <div class="col-sm-6 input-group">
+                                    <input type="email" class="form-control" id="email" name="email">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-6">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                                    <button type="submit" class="btn btn-primary">更新</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script th:src="@{/js/jquery/jquery.min.js}"></script>
+        <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+        <script th:src="@{/bootstrap/table/bootstrap-table.min.js}"></script>
+        <script th:src="@{/bootstrap/table/bootstrap-table-zh-CN.min.js}"></script>
+        <script th:inline="javascript">
+            const path = [[${#request.getContextPath()}]];
+            $(function () {
+                queryList();
+            });
+
+            let userTable;
+            function queryList() {
+                userTable = $("#userTable").bootstrapTable({
+                    url: path + '/user/list',
+                    sidePagination: 'server',
+                    pagination: true,
+                    pageNumber: 1,
+                    pageSize: 3,
+                    pageList: [5, 10, 15],
+                    queryParamsType: "undefined",
+                    paginationPreText: '上一页',
+                    paginationNextText: '下一页',
+                    queryParams: function(params) {
+                        // let provinceId = $('#province').val();
+                        // let cityId = $('#city').val();
+                        // let areaId = $('#area').val();
+                        // let rentMode = $("input[name='rentMode']:checked").val();
+                        // let rentalList = [];
+                        // $.each($("input[name='rentalList']:checked"), function() {
+                        //     rentalList.push(this.value);
+                        // });
+                        //
+                        // let houseTypeList = [];
+                        // $.each($("input[name='houseTypeList']:checked"), function() {
+                        //     houseTypeList.push(this.value);
+                        // });
+                        let newParam = {
+                            pageNum: params.pageNumber,
+                            pageSize: params.pageSize,
+                            // provinceId: provinceId,
+                            // cityId: cityId,
+                            // areaId: areaId,
+                            // rentMode: rentMode,
+                            // rentalList: rentalList.join(','),
+                            // houseTypeList: houseTypeList.join(',')
+                        }
+                        return newParam;
+                    },
+                    columns: [
+                        { field: "id", title: "id" },
+                        { field: "username", title: "用户名" },
+                        { field:"phone", title: "电话"},
+                        { field:"email", title: "邮箱"},
+                        { field:"status",title:"级别",
+                            formatter : function (value,row,index) {
+                                console.log(value);
+                                return value=='1'?"管理员":"普通用户";
+                            }
+                        },
+                        { title: "操作",
+                            formatter: function (value, row, index) {
+                                if (row.status=='1'){
+                                    var update = "<button type='button' class='btn btn-primary' id='update' disabled >修改</button>";
+                                    var del = "<button type='button' class='btn btn-danger' id='del' disabled>删除</button>";
+                                    return update + " | " + del;
+                                }
+                                var update = "<button type='button' class='btn btn-primary' id='update' >修改</button>";
+                                var del = "<button type='button' class='btn btn-danger' id='del'>删除</button>";
+                                return update + " | " + del;
+                            },
+                            events: userEvents
+                        }]
+                });
+            }
+            window.userEvents = {
+                'click #del': function(event, value, row, index) {
+                    let id = row.id;
+                    // form表单的action属性:action=/contextPath/house/100
+                    let action = path + '/user/delete?id=' + id;
+                    if(confirm('确定要删除吗？')) {
+                        $.ajax({
+                            url: action,
+                            type:"post",
+                            dataType:"json",
+                            success:function (msg) {
+                                console.log(msg);
+                                $("#userTable").bootstrapTable('refresh');
+                            }
+                        });
+                    }
+                },
+
+                'click #update': function(event, value, row, index) {
+                    $('#id').val(row.id);
+                    $('#phone').val(row.phone);
+                    $('#email').val(row.email);
+                    $('#myModal').modal('show');
+                }
+            }
+        </script>
+    </body>
+</html>
