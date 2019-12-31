@@ -154,7 +154,7 @@
       <workItem from="1577718876133" duration="113000" />
       <workItem from="1577719285011" duration="3107000" />
       <workItem from="1577756588832" duration="2048000" />
-      <workItem from="1577772823381" duration="1135000" />
+      <workItem from="1577772823381" duration="1446000" />
     </task>
     <task id="LOCAL-00001" summary="提交代码">
       <created>1577773851730</created>
@@ -163,7 +163,21 @@
       <option name="project" value="LOCAL" />
       <updated>1577773851730</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="提交代码">
+      <created>1577774073753</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1577774073753</updated>
+    </task>
+    <task id="LOCAL-00003" summary="提交代码">
+      <created>1577774184590</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1577774184590</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,10 +196,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="361" y="71" key="#Project_Structure/0.0.1536.824@0.0.1536.824" timestamp="1577684317846" />
-    <state x="372" y="6" key="CommitChangelistDialog2" timestamp="1577774158410">
+    <state x="372" y="6" key="CommitChangelistDialog2" timestamp="1577774183675">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="372" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1577774158410" />
+    <state x="372" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1577774183675" />
     <state width="420" height="466" key="DebuggerActiveHint" timestamp="1577598837212">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -246,10 +260,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="285" y="61" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1577773591452" />
-    <state x="477" y="226" key="Vcs.Push.Dialog.v2" timestamp="1577774076803">
+    <state x="477" y="226" key="Vcs.Push.Dialog.v2" timestamp="1577774196289">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="477" y="226" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1577774076803" />
+    <state x="477" y="226" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1577774196289" />
     <state x="93" y="93" width="1350" height="638" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1577757600191">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
